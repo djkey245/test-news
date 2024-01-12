@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SearchPostRequest;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
@@ -11,6 +12,7 @@ use App\Models\Post;
 use App\Repositories\Interfaces\PostRepositoryInterface;
 use App\Repositories\Interfaces\PostTranslationRepositoryInterface;
 use App\Repositories\PostTranslationRepository;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -35,7 +37,7 @@ class PostController extends Controller
             $language = Language::wherePrefix(app()->getLocale())->first();
         }
 
-        return PostResource::collection($this->postRepository->paginate($perPage, $language));
+        return PostResource::collection($this->postRepository->getAllWithPagination($perPage, $language));
     }
 
     /**
@@ -75,8 +77,12 @@ class PostController extends Controller
         return response()->json(null, 204);
     }
 
-    public function search(Request $request)
+    public function search(SearchPostRequest $request)
     {
+        $searchString = $request->get('query');
+        $perPage = $request->has('per_page') ? $request->get('per_page') : Post::DEFAULT_COUNT_POST_PER_PAGE;
+        if ($request->has('locale')) session(['locale' => $request->get('locale')]);
 
+        return PostResource::collection($this->postRepository->searchWithPagination($searchString, $perPage));
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Language;
 use App\Models\Post;
 use App\Repositories\Interfaces\PostRepositoryInterface;
 use App\Repositories\Interfaces\PostTranslationRepositoryInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -26,7 +27,7 @@ class PostRepository implements PostRepositoryInterface
         return Post::all();
     }
 
-    public function paginate(?int $perPage, ?Language $language): ?LengthAwarePaginator
+    public function getAllWithPagination(?int $perPage, ?Language $language): ?LengthAwarePaginator
     {
         return Post::query()->withDefaultTranslation($language)->with('tags')->paginate($perPage);
     }
@@ -63,6 +64,15 @@ class PostRepository implements PostRepositoryInterface
     public function showWithTranslations(Post $post): Post
     {
         return $post->load('translations');
+    }
+
+    public function searchWithPagination(string $searchString, int $perPage = Post::DEFAULT_COUNT_POST_PER_PAGE): ?LengthAwarePaginator
+    {
+        return Post::query()->whereHas('defaultTranslation', function (Builder $query) use ($searchString) {
+            $query->where('title', 'like', "%$searchString%")
+                ->orWhere('description', 'like', "%$searchString%")
+                ->orWhere('content', 'like', "%$searchString%");
+        })->with('tags')->paginate($perPage);
     }
 
 }

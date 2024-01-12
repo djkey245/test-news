@@ -15,7 +15,7 @@ interface PostRepositoryInterface
 
     public function all(): Collection;
 
-    public function paginate(?int $perPage, ?Language $language): ?LengthAwarePaginator;
+    public function getAllWithPagination(?int $perPage, ?Language $language): ?LengthAwarePaginator;
 
     public function create(array $data): Post;
 
@@ -27,5 +27,6 @@ interface PostRepositoryInterface
 
     public function showWithTranslations(Post $post): Post;
 
+    public function searchWithPagination(string $searchString, int $perHour): ?LengthAwarePaginator;
 
 }

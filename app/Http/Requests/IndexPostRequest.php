@@ -23,8 +23,8 @@ class IndexPostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'perPage' => ['numeric', 'nullable'],
-            'locale' => [Rule::exists('languages', 'prefix'), 'nullable'],
+            'per_page' => ['numeric', 'nullable'],
+            'locale' => [Rule::exists('languages', 'prefix')],
         ];
     }
 }
