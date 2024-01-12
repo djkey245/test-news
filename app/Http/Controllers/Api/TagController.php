@@ -54,7 +54,7 @@ class TagController extends Controller
      */
     public function show(Post $post, Tag $tag)
     {
-        return new TagResource($tag);
+        return new TagResource($tag->load('tags'));
     }
 
     /**

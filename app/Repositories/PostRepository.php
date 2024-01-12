@@ -28,7 +28,7 @@ class PostRepository implements PostRepositoryInterface
 
     public function paginate(?int $perPage, ?Language $language): ?LengthAwarePaginator
     {
-        return Post::query()->withDefaultTranslation($language)->paginate($perPage);
+        return Post::query()->withDefaultTranslation($language)->with('tags')->paginate($perPage);
     }
 
 
